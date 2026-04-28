@@ -21,7 +21,7 @@ def schedule_charging_session(session_id: int) -> dict:
     from ..database import SessionLocal
     from ..models import ChargingSession, ChargingSlot, Vehicle
     from ..services.scheduler_service import find_cheapest_slots
-    from datetime import datetime
+    from datetime import datetime, timezone
 
     db = SessionLocal()
     try:

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import Column, Integer, String, Float, DateTime
 from ..database import Base
 
@@ -12,4 +12,4 @@ class Vehicle(Base):
     name = Column(String, nullable=False)  # e.g. "Tesla Model 3"
     battery_capacity_kwh = Column(Float, nullable=False)
     current_battery_pct = Column(Float, nullable=False)  # 0-100
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)

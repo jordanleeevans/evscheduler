@@ -8,7 +8,7 @@ services:
   api:
     build: ./backend
     ports:
-      - "8000:8000"
+      - "8001:8000"
     environment:
       - REDIS_URL=redis://redis:6379/0
       - DATABASE_URL=sqlite:///./evscheduler.db
@@ -19,7 +19,7 @@ services:
 
   worker:
     build: ./backend
-    command: celery -A app.celery_app worker --loglevel=info
+    command: /app/.venv/bin/celery -A app.celery_app worker --loglevel=info
     environment:
       - REDIS_URL=redis://redis:6379/0
       - DATABASE_URL=sqlite:///./evscheduler.db

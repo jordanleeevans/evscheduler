@@ -31,7 +31,7 @@ Intelligently schedules EV charging during the cheapest half-hourly Octopus Agil
 | Layer | Technology |
 |-------|-----------|
 | Frontend | React 18, TypeScript, Vite, Apollo Client, Recharts |
-| API | FastAPI, Ariadne (GraphQL), Python 3.12 |
+| API | FastAPI, Ariadne (GraphQL), Python 3.14 |
 | ORM | SQLAlchemy 2.0, SQLite (dev) |
 | Task Queue | Celery 5, Redis |
 | Tariff Data | Octopus Energy Agile API (mocked) |

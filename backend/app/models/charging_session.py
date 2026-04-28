@@ -1,8 +1,16 @@
-from datetime import datetime
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
+import enum
+
+from datetime import datetime, timezone
+from sqlalchemy import Column, Integer, Float, DateTime, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 from ..database import Base
 
+class SessionStatus(enum.Enum):
+    PENDING = "PENDING"
+    SCHEDULED = "SCHEDULED"
+    ACTIVE = "ACTIVE"
+    COMPLETED = "COMPLETED"
+    CANCELLED = "CANCELLED"
 
 class ChargingSession(Base):
     """ORM model representing a planned charging session for a vehicle."""
@@ -13,9 +21,8 @@ class ChargingSession(Base):
     vehicle_id = Column(Integer, ForeignKey("vehicles.id"), nullable=False)
     departure_time = Column(DateTime, nullable=False)
     target_charge_pct = Column(Float, nullable=False)  # 0-100
-    # status: "pending" | "scheduled" | "active" | "completed" | "cancelled"
-    status = Column(String, nullable=False, default="pending")
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    status = Column(Enum(SessionStatus), nullable=False, default=SessionStatus.PENDING)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
 
     vehicle = relationship("Vehicle", back_populates=None)
     slots = relationship("ChargingSlot", back_populates="session")

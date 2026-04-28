@@ -1,7 +1,5 @@
 """Tests for GraphQL resolvers via FastAPI TestClient."""
-import json
-from datetime import datetime, timedelta
-import pytest
+from datetime import datetime
 
 
 def gql_post(client, query: str, variables: dict = None):

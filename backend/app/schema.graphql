@@ -1,19 +1,21 @@
+scalar DateTime
+
 type Vehicle {
   id: ID!
   name: String!
   batteryCapacityKwh: Float!
   currentBatteryPct: Float!
-  createdAt: String!
+  createdAt: DateTime!
 }
 
 type ChargingSession {
   id: ID!
   vehicle: Vehicle!
-  departureTime: String!
+  departureTime: DateTime!
   targetChargePct: Float!
   status: SessionStatus!
   slots: [ChargingSlot!]!
-  createdAt: String!
+  createdAt: DateTime!
 }
 
 enum SessionStatus {
@@ -28,21 +30,21 @@ type Tariff {
   id: ID!
   name: String!
   region: String!
-  validFrom: String!
-  validTo: String!
+  validFrom: DateTime!
+  validTo: DateTime!
 }
 
 type ChargingSlot {
   id: ID!
-  slotStart: String!
-  slotEnd: String!
+  slotStart: DateTime!
+  slotEnd: DateTime!
   pricePerKwh: Float!
   isSelected: Boolean!
 }
 
 type TariffPrice {
-  slotStart: String!
-  slotEnd: String!
+  slotStart: DateTime!
+  slotEnd: DateTime!
   pricePerKwh: Float!
 }
 
@@ -51,12 +53,12 @@ type Query {
   vehicle(id: ID!): Vehicle
   chargingSessions: [ChargingSession!]!
   chargingSession(id: ID!): ChargingSession
-  tariffPrices(from: String!, to: String!, region: String): [TariffPrice!]!
+  tariffPrices(from: DateTime!, to: DateTime!, region: String): [TariffPrice!]!
 }
 
 type Mutation {
   createVehicle(name: String!, batteryCapacityKwh: Float!, currentBatteryPct: Float!): Vehicle!
-  scheduleChargingSession(vehicleId: ID!, departureTime: String!, targetChargePct: Float!): ChargingSession!
+  scheduleChargingSession(vehicleId: ID!, departureTime: DateTime!, targetChargePct: Float!): ChargingSession!
   cancelChargingSession(id: ID!): ChargingSession!
   updateBatteryLevel(vehicleId: ID!, currentBatteryPct: Float!): Vehicle!
 }
