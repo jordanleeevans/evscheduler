@@ -73,16 +73,15 @@ class TestSchedulerService:
         slot_end = datetime(2024, 1, 15, 0, 0, 0)
         departure_time = datetime(2024, 1, 15, 1, 0, 0)
 
-        assert lt_departure_time(slot_end, departure_time) == True
+        assert lt_departure_time(slot_end, departure_time)
 
     def test_lt_departure_time_false(self):
         slot_end = datetime(2024, 1, 15, 2, 0, 0)
         departure_time = datetime(2024, 1, 15, 1, 0, 0)
 
-        assert lt_departure_time(slot_end, departure_time) == False
+        assert not lt_departure_time(slot_end, departure_time)
 
     def test_available_tariffs_before_departure_filters_correctly(self):
-
         now = datetime(2024, 1, 15, 0, 0, 0)
         departure_time = now + timedelta(hours=2)
 
@@ -143,7 +142,7 @@ class TestSchedulerService:
         charger_power_kw = 7.4
 
         try:
-            ttc = time_to_charge(
+            time_to_charge(
                 departure_time,
                 current_battery_pct,
                 target_charge_pct,

@@ -11,7 +11,9 @@ async def gql_post(client, query: str, variables: dict = None):
         payload["variables"] = variables
     response = await client.post("/graphql", json=payload)
     # 200 = execution result; 400 = validation/coercion error (both return JSON error bodies)
-    assert response.status_code in (200, 400), f"Unexpected status: {response.status_code}"
+    assert response.status_code in (200, 400), (
+        f"Unexpected status: {response.status_code}"
+    )
     return response.json()
 
 
@@ -154,7 +156,10 @@ class TestMutationResolvers:
         cancel = f'mutation {{ cancelChargingSession(id: "{session["id"]}") {{ id status }} }}'
         cancel_result = await gql_post(client, cancel)
         assert "errors" not in cancel_result
-        assert cancel_result["data"]["cancelChargingSession"]["status"] == SessionStatus.CANCELLED.value
+        assert (
+            cancel_result["data"]["cancelChargingSession"]["status"]
+            == SessionStatus.CANCELLED.value
+        )
 
 
 class TestValidation:

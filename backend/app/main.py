@@ -12,9 +12,9 @@ from app.resolvers.query import (
 from app.resolvers.mutation import mutation
 from app.scalars import datetime_scalar, percentage_scalar
 from app.models.charging_session import SessionStatus
+from app.database import SessionLocal
 
 session_status_type = EnumType("SessionStatus", SessionStatus)
-from app.database import engine, Base, SessionLocal
 
 app = FastAPI(title="EV Scheduler API")
 

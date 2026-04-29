@@ -20,9 +20,8 @@ def schedule_charging_session(session_id: int) -> dict:
     TODO: Send OCPP mock command to start charger at first slot.
     """
     from app.database import SessionLocal
-    from app.models import ChargingSession, ChargingSlot, Vehicle
+    from app.models import ChargingSession, Vehicle
     from app.services.scheduler_service import find_cheapest_slots
-    from datetime import datetime, timezone
 
     db = SessionLocal()
     try:

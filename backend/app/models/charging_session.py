@@ -25,7 +25,9 @@ class ChargingSession(Base):
     target_charge_pct = Column(Float, nullable=False)  # 0-100
     status = Column(Enum(SessionStatus), nullable=False, default=SessionStatus.PENDING)
     created_at = Column(
-        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
     )
 
     vehicle = relationship("Vehicle", back_populates=None)

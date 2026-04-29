@@ -115,4 +115,3 @@ class TestChargingSessionRepository:
     async def test_cancel_returns_none_for_missing(self, db):
         repo = ChargingSessionRepository(db)
         assert await repo.cancel(9999) is None
-

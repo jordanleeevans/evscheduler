@@ -15,9 +15,7 @@ class VehicleRepository:
         return list(result.scalars().all())
 
     async def get_by_id(self, vehicle_id: int) -> Vehicle | None:
-        result = await self._db.execute(
-            select(Vehicle).where(Vehicle.id == vehicle_id)
-        )
+        result = await self._db.execute(select(Vehicle).where(Vehicle.id == vehicle_id))
         return result.scalar_one_or_none()
 
     async def create(

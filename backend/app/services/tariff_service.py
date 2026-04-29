@@ -8,7 +8,6 @@ This mock returns deterministic half-hourly prices for a 24-hour window.
 """
 
 from datetime import datetime, timedelta
-import random
 from typing import List
 from pydantic import BaseModel
 import math
