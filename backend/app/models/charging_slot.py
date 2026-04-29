@@ -10,8 +10,8 @@ class ChargingSlot(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     session_id = Column(Integer, ForeignKey("charging_sessions.id"), nullable=False)
-    slot_start = Column(DateTime, nullable=False)
-    slot_end = Column(DateTime, nullable=False)
+    slot_start = Column(DateTime(timezone=True), nullable=False)
+    slot_end = Column(DateTime(timezone=True), nullable=False)
     price_per_kwh = Column(Float, nullable=False)
     is_selected = Column(Boolean, default=False, nullable=False)
 

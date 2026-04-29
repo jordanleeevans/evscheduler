@@ -11,6 +11,6 @@ class Tariff(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)  # e.g. "Octopus Agile"
     region = Column(String, nullable=False)  # e.g. "C"
-    valid_from = Column(DateTime, nullable=False)
-    valid_to = Column(DateTime, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    valid_from = Column(DateTime(timezone=True), nullable=False)
+    valid_to = Column(DateTime(timezone=True), nullable=False)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)

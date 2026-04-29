@@ -13,5 +13,5 @@ class Vehicle(Base):
     battery_capacity_kwh = Column(Float, nullable=False)
     current_battery_pct = Column(Float, nullable=False)  # 0-100
     created_at = Column(
-        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False
     )
