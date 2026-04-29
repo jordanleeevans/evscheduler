@@ -1,9 +1,8 @@
 import logging
 from ariadne import QueryType, ObjectType, ScalarType
-from sqlalchemy import select
-from app.models import Vehicle, ChargingSession
+from app.repositories import VehicleRepository, ChargingSessionRepository
 from app.services.tariff_service import create_half_hourly_tariffs
-from datetime import datetime, timezone
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -21,36 +20,26 @@ def serialize_datetime(value):
 
 @query.field("vehicles")
 async def resolve_vehicles(obj, info):
-    """Return all vehicles from the database. TODO: Add pagination."""
-    db = info.context["db"]
-    result = await db.execute(select(Vehicle))
-    return result.scalars().all()
+    repo = VehicleRepository(info.context["db"])
+    return await repo.get_all()
 
 
 @query.field("vehicle")
 async def resolve_vehicle(obj, info, id):
-    """Return a single vehicle by ID. TODO: Raise GraphQL error if not found."""
-    db = info.context["db"]
-    result = await db.execute(select(Vehicle).where(Vehicle.id == int(id)))
-    return result.scalar_one_or_none()
+    repo = VehicleRepository(info.context["db"])
+    return await repo.get_by_id(int(id))
 
 
 @query.field("chargingSessions")
 async def resolve_charging_sessions(obj, info):
-    """Return all charging sessions. TODO: Add filtering by status and vehicle."""
-    db = info.context["db"]
-    result = await db.execute(select(ChargingSession))
-    return result.scalars().all()
+    repo = ChargingSessionRepository(info.context["db"])
+    return await repo.get_all()
 
 
 @query.field("chargingSession")
 async def resolve_charging_session(obj, info, id):
-    """Return a single charging session by ID. TODO: Raise GraphQL error if not found."""
-    db = info.context["db"]
-    result = await db.execute(
-        select(ChargingSession).where(ChargingSession.id == int(id))
-    )
-    return result.scalar_one_or_none()
+    repo = ChargingSessionRepository(info.context["db"])
+    return await repo.get_by_id(int(id))
 
 
 @query.field("tariffPrices")
