@@ -1,10 +1,11 @@
 scalar DateTime
+scalar Percentage
 
 type Vehicle {
   id: ID!
   name: String!
   batteryCapacityKwh: Float!
-  currentBatteryPct: Float!
+  currentBatteryPct: Percentage!
   createdAt: DateTime!
 }
 
@@ -12,7 +13,7 @@ type ChargingSession {
   id: ID!
   vehicle: Vehicle!
   departureTime: DateTime!
-  targetChargePct: Float!
+  targetChargePct: Percentage!
   status: SessionStatus!
   slots: [ChargingSlot!]!
   createdAt: DateTime!
@@ -57,8 +58,8 @@ type Query {
 }
 
 type Mutation {
-  createVehicle(name: String!, batteryCapacityKwh: Float!, currentBatteryPct: Float!): Vehicle!
-  scheduleChargingSession(vehicleId: ID!, departureTime: DateTime!, targetChargePct: Float!): ChargingSession!
+  createVehicle(name: String!, batteryCapacityKwh: Float!, currentBatteryPct: Percentage!): Vehicle!
+  scheduleChargingSession(vehicleId: ID!, departureTime: DateTime!, targetChargePct: Percentage!): ChargingSession!
   cancelChargingSession(id: ID!): ChargingSession!
-  updateBatteryLevel(vehicleId: ID!, currentBatteryPct: Float!): Vehicle!
+  updateBatteryLevel(vehicleId: ID!, currentBatteryPct: Percentage!): Vehicle!
 }

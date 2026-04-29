@@ -1,8 +1,7 @@
 import logging
-from ariadne import QueryType, ObjectType, ScalarType
+from ariadne import QueryType, ObjectType
 from app.repositories import VehicleRepository, ChargingSessionRepository
 from app.services.tariff_service import create_half_hourly_tariffs
-from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -10,14 +9,6 @@ query = QueryType()
 vehicle_type = ObjectType("Vehicle")
 charging_session_type = ObjectType("ChargingSession")
 charging_slot_type = ObjectType("ChargingSlot")
-datetime_scalar = ScalarType("DateTime")
-
-
-@datetime_scalar.serializer
-def serialize_datetime(value):
-    return value.isoformat()
-
-
 @query.field("vehicles")
 async def resolve_vehicles(obj, info):
     repo = VehicleRepository(info.context["db"])
@@ -45,12 +36,9 @@ async def resolve_charging_session(obj, info, id):
 @query.field("tariffPrices")
 async def resolve_tariff_prices(obj, info, **kwargs):
     """Return mock tariff prices for the given time window. TODO: Replace mock with live API."""
-    from_str = kwargs.get("from")
-    to_str = kwargs.get("to")
+    from_dt = kwargs.get("from")   # datetime (parsed by DateTime scalar)
+    to_dt = kwargs.get("to")       # datetime (parsed by DateTime scalar)
     region = kwargs.get("region", "C")
-
-    from_dt = datetime.fromisoformat(from_str)
-    to_dt = datetime.fromisoformat(to_str)
 
     logger.info(f"Fetching tariff prices for region {region} from {from_dt} to {to_dt}")
 

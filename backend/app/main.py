@@ -1,6 +1,6 @@
 import os
 from fastapi import FastAPI
-from ariadne import load_schema_from_path, make_executable_schema
+from ariadne import load_schema_from_path, make_executable_schema, EnumType
 from ariadne.asgi import GraphQL
 from starlette.requests import Request
 from app.resolvers.query import (
@@ -8,9 +8,12 @@ from app.resolvers.query import (
     vehicle_type,
     charging_session_type,
     charging_slot_type,
-    datetime_scalar,
 )
 from app.resolvers.mutation import mutation
+from app.scalars import datetime_scalar, percentage_scalar
+from app.models.charging_session import SessionStatus
+
+session_status_type = EnumType("SessionStatus", SessionStatus)
 from app.database import engine, Base, SessionLocal
 
 app = FastAPI(title="EV Scheduler API")
@@ -25,6 +28,8 @@ schema = make_executable_schema(
     charging_session_type,
     charging_slot_type,
     datetime_scalar,
+    percentage_scalar,
+    session_status_type,
     convert_names_case=True,
 )
 
