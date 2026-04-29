@@ -1,4 +1,5 @@
 """Tests for ORM models: create, persist, and query back."""
+
 from datetime import datetime, timezone, timedelta
 from sqlalchemy import select, func
 from app.models import Vehicle, ChargingSession, Tariff, ChargingSlot
@@ -40,12 +41,14 @@ class TestVehicle:
 
     async def test_multiple_vehicles(self, db):
         for i in range(3):
-            db.add(Vehicle(
-                name=f"Car {i}",
-                battery_capacity_kwh=60.0,
-                current_battery_pct=float(i * 10),
-                created_at=datetime.now(timezone.utc),
-            ))
+            db.add(
+                Vehicle(
+                    name=f"Car {i}",
+                    battery_capacity_kwh=60.0,
+                    current_battery_pct=float(i * 10),
+                    created_at=datetime.now(timezone.utc),
+                )
+            )
         await db.commit()
         result = await db.execute(select(func.count()).select_from(Vehicle))
         assert result.scalar() == 3
@@ -88,7 +91,13 @@ class TestChargingSession:
         db.add(vehicle)
         await db.commit()
 
-        for status in [SessionStatus.PENDING, SessionStatus.SCHEDULED, SessionStatus.ACTIVE, SessionStatus.COMPLETED, SessionStatus.CANCELLED]:
+        for status in [
+            SessionStatus.PENDING,
+            SessionStatus.SCHEDULED,
+            SessionStatus.ACTIVE,
+            SessionStatus.COMPLETED,
+            SessionStatus.CANCELLED,
+        ]:
             session = ChargingSession(
                 vehicle_id=vehicle.id,
                 departure_time=datetime.now(timezone.utc) + timedelta(hours=4),
@@ -102,6 +111,7 @@ class TestChargingSession:
         result = await db.execute(select(ChargingSession))
         sessions = result.scalars().all()
         assert len(sessions) == 5
+
 
 class TestTariff:
     async def test_create_tariff(self, db):
@@ -123,13 +133,15 @@ class TestTariff:
 
     async def test_query_tariff(self, db):
         now = datetime.now(timezone.utc)
-        db.add(Tariff(
-            name="GO Tariff",
-            region="A",
-            valid_from=now,
-            valid_to=now + timedelta(hours=4),
-            created_at=now,
-        ))
+        db.add(
+            Tariff(
+                name="GO Tariff",
+                region="A",
+                valid_from=now,
+                valid_to=now + timedelta(hours=4),
+                created_at=now,
+            )
+        )
         await db.commit()
 
         result = await db.execute(select(Tariff).where(Tariff.region == "A"))

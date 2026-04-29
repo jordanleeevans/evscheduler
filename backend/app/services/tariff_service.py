@@ -6,6 +6,7 @@ The real Octopus Agile API endpoint is:
 
 This mock returns deterministic half-hourly prices for a 24-hour window.
 """
+
 from datetime import datetime, timedelta
 import random
 from typing import List
@@ -19,7 +20,9 @@ class TariffPrice(BaseModel):
     price_per_kwh: float
 
 
-def create_half_hourly_tariffs(from_dt: datetime, to_dt: datetime, region: str = "C") -> List[TariffPrice]:
+def create_half_hourly_tariffs(
+    from_dt: datetime, to_dt: datetime, region: str = "C"
+) -> List[TariffPrice]:
     """Return mock half-hourly Agile tariff prices between from_dt and to_dt.
 
     Prices follow a realistic overnight dip pattern:
@@ -46,7 +49,11 @@ def create_half_hourly_tariffs(from_dt: datetime, to_dt: datetime, region: str =
         hour = current.hour + current.minute / 60.0
         # Sine-wave based price curve: cheap overnight, expensive evening
         # price = base + amplitude * sin(pi * (hour - shift) / period) + noise
-        price = BASE_PRICE + AMPLITUDE * math.sin(PI * (hour - PHASE_SHIFT) / 12) + NOISE_AMPLITUDE * math.sin(PI * hour / 6)
+        price = (
+            BASE_PRICE
+            + AMPLITUDE * math.sin(PI * (hour - PHASE_SHIFT) / 12)
+            + NOISE_AMPLITUDE * math.sin(PI * hour / 6)
+        )
         price = max(2.0, round(price, 2))
         prices.append(
             TariffPrice(

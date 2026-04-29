@@ -3,6 +3,7 @@ Scheduler service: selects the cheapest available charging slots for a session.
 
 Business logic TODO: implement find_cheapest_slots.
 """
+
 from datetime import datetime, timezone
 from math import ceil
 from operator import attrgetter
@@ -10,6 +11,7 @@ from typing import List
 
 from pydantic import BaseModel, Field
 from app.services.tariff_service import TariffPrice, create_half_hourly_tariffs
+
 
 class TimeToCharge(BaseModel):
     hours: float = Field(ge=0, description="Hours required to charge.")
@@ -20,20 +22,35 @@ def lt_departure_time(slot_end: datetime, departure_time: datetime) -> bool:
     """Helper function to check if a slot ends before the departure time."""
     return slot_end < departure_time
 
-def available_tariffs_before_departure(available_prices: List[TariffPrice], departure_time: datetime) -> List[TariffPrice]:
-    """Filter available tariff prices to those that end before the departure time."""
-    return list(filter(lambda p: lt_departure_time(p.slot_end, departure_time), available_prices))
 
-def time_to_charge(departure_time: datetime, current_battery_pct: float, target_charge_pct: float, battery_capacity_kwh: float, charger_power_kw: float) -> TimeToCharge:
+def available_tariffs_before_departure(
+    available_prices: List[TariffPrice], departure_time: datetime
+) -> List[TariffPrice]:
+    """Filter available tariff prices to those that end before the departure time."""
+    return list(
+        filter(
+            lambda p: lt_departure_time(p.slot_end, departure_time), available_prices
+        )
+    )
+
+
+def time_to_charge(
+    departure_time: datetime,
+    current_battery_pct: float,
+    target_charge_pct: float,
+    battery_capacity_kwh: float,
+    charger_power_kw: float,
+) -> TimeToCharge:
     required_pct = target_charge_pct - current_battery_pct
 
     if required_pct <= 0:
         raise ValueError("Vehicle doesn't require charge.")
 
-    required_energy = battery_capacity_kwh * required_pct / 100 # kwh
+    required_energy = battery_capacity_kwh * required_pct / 100  # kwh
     time_to_charge_hours = required_energy / charger_power_kw
     time_to_charge_minutes = time_to_charge_hours * 60
     return TimeToCharge(hours=time_to_charge_hours, minutes=time_to_charge_minutes)
+
 
 def find_cheapest_slots(
     departure_time: datetime,
@@ -66,17 +83,27 @@ def find_cheapest_slots(
     TARIFF_FREQUENCY_MINUTES = 30
     now = starting_time or datetime.now(timezone.utc)
     tariff_slots = create_half_hourly_tariffs(now, departure_time, region)
-    
+
     # 1. Get slots < departure_time
-    useable_tariffs_slots = available_tariffs_before_departure(tariff_slots, departure_time)
+    useable_tariffs_slots = available_tariffs_before_departure(
+        tariff_slots, departure_time
+    )
 
     # 2. Compute required charging time in minutes
-    ttc = time_to_charge(departure_time, current_battery_pct, target_charge_pct, battery_capacity_kwh, charger_power_kw)
+    ttc = time_to_charge(
+        departure_time,
+        current_battery_pct,
+        target_charge_pct,
+        battery_capacity_kwh,
+        charger_power_kw,
+    )
 
     required_tariff_slots = ceil(ttc.minutes / TARIFF_FREQUENCY_MINUTES)
 
     if required_tariff_slots > len(useable_tariffs_slots):
-        raise ValueError(f"Not enough available slots to charge vehicle to {target_charge_pct} before {departure_time}.")
+        raise ValueError(
+            f"Not enough available slots to charge vehicle to {target_charge_pct} before {departure_time}."
+        )
 
     # 3. Sort available slots by price
     ordered_prices_asc = sorted(useable_tariffs_slots, key=attrgetter("price_per_kwh"))

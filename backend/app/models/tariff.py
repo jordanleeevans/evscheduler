@@ -9,7 +9,7 @@ class Tariff(Base):
     __tablename__ = "tariffs"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)    # e.g. "Octopus Agile"
+    name = Column(String, nullable=False)  # e.g. "Octopus Agile"
     region = Column(String, nullable=False)  # e.g. "C"
     valid_from = Column(DateTime, nullable=False)
     valid_to = Column(DateTime, nullable=False)

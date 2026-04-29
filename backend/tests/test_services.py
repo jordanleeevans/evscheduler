@@ -1,8 +1,14 @@
 """Tests for tariff_service mock price data."""
+
 from datetime import datetime, timedelta, timezone
 from math import ceil
 from app.services.tariff_service import create_half_hourly_tariffs, TariffPrice
-from app.services.scheduler_service import available_tariffs_before_departure, find_cheapest_slots, lt_departure_time, time_to_charge
+from app.services.scheduler_service import (
+    available_tariffs_before_departure,
+    find_cheapest_slots,
+    lt_departure_time,
+    time_to_charge,
+)
 
 
 class TestGetMockPrices:
@@ -61,13 +67,14 @@ class TestGetMockPrices:
         for i in range(len(prices) - 1):
             assert prices[i].slot_end == prices[i + 1].slot_start
 
+
 class TestSchedulerService:
     def test_lt_departure_time_true(self):
         slot_end = datetime(2024, 1, 15, 0, 0, 0)
         departure_time = datetime(2024, 1, 15, 1, 0, 0)
 
         assert lt_departure_time(slot_end, departure_time) == True
-    
+
     def test_lt_departure_time_false(self):
         slot_end = datetime(2024, 1, 15, 2, 0, 0)
         departure_time = datetime(2024, 1, 15, 1, 0, 0)
@@ -80,12 +87,24 @@ class TestSchedulerService:
         departure_time = now + timedelta(hours=2)
 
         slots_that_end_before_departure = [
-            TariffPrice(slot_start=now + timedelta(minutes=30), slot_end=now + timedelta(minutes=60), price_per_kwh=10.0),
+            TariffPrice(
+                slot_start=now + timedelta(minutes=30),
+                slot_end=now + timedelta(minutes=60),
+                price_per_kwh=10.0,
+            ),
         ]
 
         slots_that_end_after_departure = [
-            TariffPrice(slot_start=now + timedelta(minutes=90), slot_end=now + timedelta(minutes=120), price_per_kwh=12.0),
-            TariffPrice(slot_start=now + timedelta(minutes=150), slot_end=now + timedelta(minutes=180), price_per_kwh=8.0),
+            TariffPrice(
+                slot_start=now + timedelta(minutes=90),
+                slot_end=now + timedelta(minutes=120),
+                price_per_kwh=12.0,
+            ),
+            TariffPrice(
+                slot_start=now + timedelta(minutes=150),
+                slot_end=now + timedelta(minutes=180),
+                price_per_kwh=8.0,
+            ),
         ]
 
         all_slots = slots_that_end_before_departure + slots_that_end_after_departure
@@ -101,11 +120,21 @@ class TestSchedulerService:
         battery_capacity_kwh = 60.0
         charger_power_kw = 7.4
 
-        ttc = time_to_charge(departure_time, current_battery_pct, target_charge_pct, battery_capacity_kwh, charger_power_kw)
-        expected_required_energy = battery_capacity_kwh * (target_charge_pct - current_battery_pct) / 100  # kWh
-        assert round(ttc.hours, 2) == round(expected_required_energy / charger_power_kw, 2)
+        ttc = time_to_charge(
+            departure_time,
+            current_battery_pct,
+            target_charge_pct,
+            battery_capacity_kwh,
+            charger_power_kw,
+        )
+        expected_required_energy = (
+            battery_capacity_kwh * (target_charge_pct - current_battery_pct) / 100
+        )  # kWh
+        assert round(ttc.hours, 2) == round(
+            expected_required_energy / charger_power_kw, 2
+        )
         assert ttc.minutes == expected_required_energy / charger_power_kw * 60
-    
+
     def test_time_to_charge_no_charge_needed(self):
         departure_time = datetime(2024, 1, 15, 8, 0, 0)
         current_battery_pct = 80.0
@@ -114,17 +143,25 @@ class TestSchedulerService:
         charger_power_kw = 7.4
 
         try:
-            ttc = time_to_charge(departure_time, current_battery_pct, target_charge_pct, battery_capacity_kwh, charger_power_kw)
+            ttc = time_to_charge(
+                departure_time,
+                current_battery_pct,
+                target_charge_pct,
+                battery_capacity_kwh,
+                charger_power_kw,
+            )
             assert False, "Expected ValueError for no charge needed"
         except ValueError as e:
             assert str(e) == "Vehicle doesn't require charge."
-    
+
     def test_not_enough_slots_available(self):
         starting_time = datetime(2024, 1, 15, 9, 0, 0, tzinfo=timezone.utc)
         departure_time = datetime(2024, 1, 15, 8, 0, 0, tzinfo=timezone.utc)
 
-        assert starting_time > departure_time, "Starting time should be before departure time for this test"
-        
+        assert starting_time > departure_time, (
+            "Starting time should be before departure time for this test"
+        )
+
         current_battery_pct = 20.0
         target_charge_pct = 80.0
         battery_capacity_kwh = 60.0
@@ -138,7 +175,7 @@ class TestSchedulerService:
                 battery_capacity_kwh,
                 charger_power_kw=charger_power_kw,
                 starting_time=starting_time,
-                region="C"
+                region="C",
             )
             assert False, "Expected ValueError for not enough available slots"
         except ValueError as e:
@@ -159,14 +196,20 @@ class TestSchedulerService:
             battery_capacity_kwh,
             charger_power_kw=charger_power_kw,
             starting_time=starting_time,
-            region="C"
+            region="C",
         )
 
-        ttc = time_to_charge(departure_time, current_battery_pct, target_charge_pct, battery_capacity_kwh, charger_power_kw)
+        ttc = time_to_charge(
+            departure_time,
+            current_battery_pct,
+            target_charge_pct,
+            battery_capacity_kwh,
+            charger_power_kw,
+        )
         required_slots = ceil(ttc.minutes / 30)
 
-        assert len(selected_slots) == required_slots 
-    
+        assert len(selected_slots) == required_slots
+
     def test_find_cheapest_slots_returns_cheapest_slots(self):
         starting_time = datetime(2024, 1, 15, 0, 0, 0, tzinfo=timezone.utc)
         departure_time = datetime(2024, 1, 15, 8, 0, 0, tzinfo=timezone.utc)
@@ -182,11 +225,13 @@ class TestSchedulerService:
             battery_capacity_kwh,
             starting_time=starting_time,
             charger_power_kw=charger_power_kw,
-            region="C"
+            region="C",
         )
 
         # Check that selected slots are cheaper than any unselected slots
-        all_slots = create_half_hourly_tariffs(starting_time, departure_time, region="C")
+        all_slots = create_half_hourly_tariffs(
+            starting_time, departure_time, region="C"
+        )
         useable_slots = available_tariffs_before_departure(all_slots, departure_time)
         for selected_slot in selected_slots:
             for other_slot in useable_slots:

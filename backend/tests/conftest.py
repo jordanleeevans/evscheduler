@@ -35,7 +35,11 @@ async def client(db):
 
     fastapi_app.dependency_overrides[get_db] = override_get_db
     graphql_app.http_handler.context_value = override_context
-    async with AsyncClient(transport=ASGITransport(app=fastapi_app), base_url="http://test", follow_redirects=True) as c:
+    async with AsyncClient(
+        transport=ASGITransport(app=fastapi_app),
+        base_url="http://test",
+        follow_redirects=True,
+    ) as c:
         yield c
     fastapi_app.dependency_overrides.clear()
     graphql_app.http_handler.context_value = get_context

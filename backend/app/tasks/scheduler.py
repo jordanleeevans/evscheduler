@@ -1,4 +1,5 @@
 """Celery tasks for charging session scheduling."""
+
 from app.celery_app import celery_app
 
 
@@ -25,7 +26,9 @@ def schedule_charging_session(session_id: int) -> dict:
 
     db = SessionLocal()
     try:
-        session = db.query(ChargingSession).filter(ChargingSession.id == session_id).first()
+        session = (
+            db.query(ChargingSession).filter(ChargingSession.id == session_id).first()
+        )
         if session is None:
             return {"error": f"Session {session_id} not found"}
 

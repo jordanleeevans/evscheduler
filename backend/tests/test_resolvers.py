@@ -1,4 +1,5 @@
 """Tests for GraphQL resolvers via HTTPX AsyncClient."""
+
 from datetime import datetime
 
 

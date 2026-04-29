@@ -13,9 +13,11 @@ charging_session_type = ObjectType("ChargingSession")
 charging_slot_type = ObjectType("ChargingSlot")
 datetime_scalar = ScalarType("DateTime")
 
+
 @datetime_scalar.serializer
 def serialize_datetime(value):
     return value.isoformat()
+
 
 @query.field("vehicles")
 async def resolve_vehicles(obj, info):
@@ -45,7 +47,9 @@ async def resolve_charging_sessions(obj, info):
 async def resolve_charging_session(obj, info, id):
     """Return a single charging session by ID. TODO: Raise GraphQL error if not found."""
     db = info.context["db"]
-    result = await db.execute(select(ChargingSession).where(ChargingSession.id == int(id)))
+    result = await db.execute(
+        select(ChargingSession).where(ChargingSession.id == int(id))
+    )
     return result.scalar_one_or_none()
 
 
