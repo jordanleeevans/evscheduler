@@ -3,11 +3,9 @@ from fastapi import FastAPI
 from ariadne import load_schema_from_path, make_executable_schema
 from ariadne.asgi import GraphQL
 from starlette.requests import Request
-from .resolvers.query import query, vehicle_type, charging_session_type, charging_slot_type, datetime_scalar
-from .resolvers.mutation import mutation
-from .database import engine, Base, SessionLocal
-
-Base.metadata.create_all(bind=engine)
+from app.resolvers.query import query, vehicle_type, charging_session_type, charging_slot_type, datetime_scalar
+from app.resolvers.mutation import mutation
+from app.database import engine, Base, SessionLocal
 
 app = FastAPI(title="EV Scheduler API")
 
@@ -18,8 +16,7 @@ schema = make_executable_schema(type_defs, query, mutation, vehicle_type, chargi
 
 async def get_context(request: Request, data):
     """Provide DB session in GraphQL context."""
-    db = SessionLocal()
-    return {"request": request, "db": db}
+    return {"request": request, "db": SessionLocal()}
 
 
 graphql_app = GraphQL(schema, debug=True, context_value=get_context)

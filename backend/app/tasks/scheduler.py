@@ -1,5 +1,5 @@
 """Celery tasks for charging session scheduling."""
-from ..celery_app import celery_app
+from app.celery_app import celery_app
 
 
 @celery_app.task(name="tasks.schedule_charging_session")
@@ -18,9 +18,9 @@ def schedule_charging_session(session_id: int) -> dict:
     TODO: Implement slot creation logic.
     TODO: Send OCPP mock command to start charger at first slot.
     """
-    from ..database import SessionLocal
-    from ..models import ChargingSession, ChargingSlot, Vehicle
-    from ..services.scheduler_service import find_cheapest_slots
+    from app.database import SessionLocal
+    from app.models import ChargingSession, ChargingSlot, Vehicle
+    from app.services.scheduler_service import find_cheapest_slots
     from datetime import datetime, timezone
 
     db = SessionLocal()

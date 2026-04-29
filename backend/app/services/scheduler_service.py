@@ -9,7 +9,7 @@ from operator import attrgetter
 from typing import List
 
 from pydantic import BaseModel, Field
-from .tariff_service import TariffPrice, create_half_hourly_tariffs
+from app.services.tariff_service import TariffPrice, create_half_hourly_tariffs
 
 class TimeToCharge(BaseModel):
     hours: float = Field(ge=0, description="Hours required to charge.")

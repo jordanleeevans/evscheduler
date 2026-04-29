@@ -1,7 +1,8 @@
 import logging
 from ariadne import QueryType, ObjectType, ScalarType
-from ..models import Vehicle, ChargingSession
-from ..services.tariff_service import create_half_hourly_tariffs
+from sqlalchemy import select
+from app.models import Vehicle, ChargingSession
+from app.services.tariff_service import create_half_hourly_tariffs
 from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
@@ -17,35 +18,39 @@ def serialize_datetime(value):
     return value.isoformat()
 
 @query.field("vehicles")
-def resolve_vehicles(obj, info):
+async def resolve_vehicles(obj, info):
     """Return all vehicles from the database. TODO: Add pagination."""
     db = info.context["db"]
-    return db.query(Vehicle).all()
+    result = await db.execute(select(Vehicle))
+    return result.scalars().all()
 
 
 @query.field("vehicle")
-def resolve_vehicle(obj, info, id):
+async def resolve_vehicle(obj, info, id):
     """Return a single vehicle by ID. TODO: Raise GraphQL error if not found."""
     db = info.context["db"]
-    return db.query(Vehicle).filter(Vehicle.id == int(id)).first()
+    result = await db.execute(select(Vehicle).where(Vehicle.id == int(id)))
+    return result.scalar_one_or_none()
 
 
 @query.field("chargingSessions")
-def resolve_charging_sessions(obj, info):
+async def resolve_charging_sessions(obj, info):
     """Return all charging sessions. TODO: Add filtering by status and vehicle."""
     db = info.context["db"]
-    return db.query(ChargingSession).all()
+    result = await db.execute(select(ChargingSession))
+    return result.scalars().all()
 
 
 @query.field("chargingSession")
-def resolve_charging_session(obj, info, id):
+async def resolve_charging_session(obj, info, id):
     """Return a single charging session by ID. TODO: Raise GraphQL error if not found."""
     db = info.context["db"]
-    return db.query(ChargingSession).filter(ChargingSession.id == int(id)).first()
+    result = await db.execute(select(ChargingSession).where(ChargingSession.id == int(id)))
+    return result.scalar_one_or_none()
 
 
 @query.field("tariffPrices")
-def resolve_tariff_prices(obj, info, **kwargs):
+async def resolve_tariff_prices(obj, info, **kwargs):
     """Return mock tariff prices for the given time window. TODO: Replace mock with live API."""
     from_str = kwargs.get("from")
     to_str = kwargs.get("to")
