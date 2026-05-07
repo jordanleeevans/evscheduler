@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { Sulphur_Point } from "next/font/google";
-import "./globals.css";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { ApolloWrapper } from "./ApolloWrapper";
-
-const sulphurPoint = Sulphur_Point({
-  variable: "--font-sulphur-point",
-  subsets: ["latin"],
-  weight: "300",
-});
+import ThemeRegistry from "./ui/ThemeRegistry";
+import Navbar from "./ui/Navbar";
+import "./globals.css";
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
 
 export const metadata: Metadata = {
   title: "EV Scheduler",
@@ -21,9 +21,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${sulphurPoint.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">
-        <ApolloWrapper>{children}</ApolloWrapper>
+    <html lang="en">
+      <body>
+        <AppRouterCacheProvider>
+          <ThemeRegistry>
+            <Navbar />
+            <ApolloWrapper>{children}</ApolloWrapper>
+          </ThemeRegistry>
+        </AppRouterCacheProvider>
       </body>
     </html>
   );

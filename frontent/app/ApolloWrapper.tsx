@@ -11,7 +11,7 @@ import env from "./env";
 function makeClient() {
   const httpLink = new HttpLink({
     // Use an absolute URL for SSR
-    uri: env.API_URL,
+    uri: env.NEXT_PUBLIC_API_URL,
     fetchOptions: {
       // Optional: Next.js-specific fetch options
       // Note: This doesn't work with `export const dynamic = "force-static"`
