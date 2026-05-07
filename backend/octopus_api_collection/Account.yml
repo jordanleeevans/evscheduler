@@ -1,0 +1,20 @@
+info:
+  name: Account
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: https://api.octopus.energy/v1/accounts/{{account_number}}
+  auth:
+    type: basic
+    username: "{{api_key}}"
+    password: ""
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: Retrieves account details including meter points and agreements for the given account number.

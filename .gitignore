@@ -209,6 +209,9 @@ tempCodeRunnerFile.py
 # PyPI configuration file
 .pypirc
 
+# Bruno environments (contains secrets)
+backend/octopus_api_collection/environments/env.yml
+
 # Marimo
 marimo/_static/
 marimo/_lsp/
